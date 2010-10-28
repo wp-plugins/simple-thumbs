@@ -564,6 +564,7 @@ if( class_exists( 'wp_plugin_simple_thumbs' ) ) {
 
 }
 
+// Instantiate
 $wp_plugin_simple_thumbs = new wp_plugin_simple_thumbs;
 
 
