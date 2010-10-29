@@ -4,7 +4,7 @@
 Plugin Name: Simple Thumbs
 Plugin URI: http://eskapism.se/code-playground/simple-thumbs/
 Description: Generates image thumbs, with options to crop or fit to the wanted size. Using custom rewrite rules the urls are also pretty nice and SEO-friendly. You can also generate img tags with the correct width & height attributes set, even after resize.
-Version: 0.1
+Version: 0.2
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -147,6 +147,9 @@ function simple_thumbs_img($args = "") {
 }
 }
 
+
+
+
 /**
  * The main class
  */
@@ -168,6 +171,7 @@ class wp_plugin_simple_thumbs {
 
 		register_activation_hook( __FILE__, array($this, 'activation_hook') );
 		register_deactivation_hook( __FILE__, array($this, 'deactivation_hook'));
+		add_action("init", array($this, 'action_init'));
 		add_filter('wp', array($this, 'wp'));
 		add_filter('generate_rewrite_rules', array($this, 'generate_rewrite_rules'));
 		add_filter('template_redirect', array($this, 'template_redirect'));
@@ -180,6 +184,33 @@ class wp_plugin_simple_thumbs {
 		add_filter('edit_attachment', array($this, "filter_edit_attachment"));
 				
 	}
+
+	function is_simple_thumbs_request() {
+	    // if run early (like in init) no usable info in wp_query at this time
+	    // so check REQUEST_URI directly, if it begins with /image/
+	    return (preg_match("/^\/image\//", $_SERVER["REQUEST_URI"]));
+	}
+
+	function action_init() {
+
+		// remove filters for wp_minify and autoptimize
+		// because they breaks the image. other than that they are really nice plugins!
+		if ($this->is_simple_thumbs_request()) {
+			remove_action("template_redirect", "autoptimize_start_buffering", 2);
+			global $wp_filter;
+			if (isset($wp_filter["init"][99999])) {
+				foreach ($wp_filter["init"][99999] as $key => $val) {
+					// look for something like 00000000280de24000000000590d4c56pre_content] => Array
+					if (strpos($key, "pre_content") !== false) {
+						unset($wp_filter["init"][99999][$key]);
+					}
+					
+				}
+			}
+		}
+		
+	}
+
 
 	function filter_edit_attachment($post_id) {
 		$this->clear_cache_for_specific_post_id($post_id);

@@ -127,5 +127,8 @@ Filter (well.. one so far!)
 
 == Changelog ==
 
+= 0.2 =
+- Fixed so plugins wp_minify and autoptimize don't break the thumbnails.
+
 = 0.1 =
 - First version. Works fine for me. Let me know how your thumbnail-experience is going!
