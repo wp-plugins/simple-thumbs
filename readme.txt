@@ -12,47 +12,48 @@ Generate image thumbs from WP attachments, w/ options to crop & fit to wanted si
 
 (Nice of you to find this plugin. I'm still working on the readme and on a example/tutorial. Stay tuned!)
 
-This plugin does two things:
+This plugin does three things:
 
-1. It creates rewrite rules that let you create nice urls for your images, with the option to resize and crop the image.
-2. It adds a function, simple_thumbs_img(), that works as a wrapper to the rewrite rules. 
-With this function you can create ready-to-go IMG-tags, that even if you choose to resize the 
-image it will output the correct width and height.
+1. It creates rewrite rules that let you create nice urls for your images, 
+like "http://example.com/image/55/DSC_0001.jpg" instead of "http://example.com/wordpress/wp-content/uploads/2010/02/DSC_0001.jpg""
+2. It let's you resize and crop images. And you can add unsharp filter to them too.
+3. It adds a function, simple_thumbs_img() and with this function you can create ready-to-go IMG-tags
+that outputs the correct width and height, even if you choose to resize or crop your image.
 
 #### Rewrite Rules/Nice Image URLs example
 
-Instead of this URL:
-http://eskapism.se/wordpress/wp-content/uploads/2010/02/DSC_0003.jpg
+Instead of this URL:  
+http://example.com/wordpress/wp-content/uploads/2010/02/DSC_0001.jpg
 
-Your image can have this URL, where 55 is the Attachment ID:
-http://eskapism.se/image/55/DSC_0003.jpg
+Your image can have this URL, where 55 is the Attachment ID:  
+http://example.com/image/55/DSC_0001.jpg
 
-Shorter and sweeter.
+Shorter and sweeter.  
 But there's more! You can also send in some arguments:
 
-Resize the image to be 150px in width:
-`http://eskapism.se/image/55:w150/DSC_0003.jpg`
+Resize the image to be 150px in width:  
+`http://example.com/image/55:w150/DSC_0001.jpg`
 
-Resize the image to be 150px in width, and give it another name (you can name the image to whatever you want)
-http://eskapism.se/image/55:w150/my-cool-image.jpg
+Resize the image to be 150px in width, and give it another name (you can name the image to whatever you want)  
+http://example.com/image/55:w150/my-cool-image.jpg
 
-Resize the image to 150px in height:
-http://eskapism.se/image/55:h150/DSC_0003.jpg
+Resize the image to 150px in height:  
+http://example.com/image/55:h150/DSC_0001.jpg
 
-Resize the image to stay within 150px in height and width:
-http://eskapism.se/image/55:w150:h150/DSC_0003.jpg
+Resize the image to stay within 150px in height and width:  
+http://example.com/image/55:w150:h150/DSC_0001.jpg
 
-Crop the image to exactly 150px in width and height:
-http://eskapism.se/image/55:w150:h150/DSC_0003.jpg
+Crop the image to exactly 150px in width and height:  
+http://example.com/image/55:w150:h150/DSC_0001.jpg
 
-Make a small thumb, and also add an unsharp filter:
-http://eskapism.se/image/55:w175:h75:c1:u1/DSC_0003.jpg
+Make a small thumb, and also add an unsharp filter:  
+http://example.com/image/55:w175:h75:c1:u1/DSC_0001.jpg
 
-Make a small thumb, and also add an unsharp filter, and output as png:
-http://eskapism.se/image/55:w175:h75:c1:u1:fp/DSC_0003.jpg
+Make a small thumb, and also add an unsharp filter, and output as png:  
+http://example.com/image/55:w175:h75:c1:u1:fp/DSC_0001.jpg
 
-Same as above, but with pipe as the delimeter (you can choose between ,._- and |):
-http://eskapism.se/image/55|w175|h75|c1|u1|fp/DSC_0003.jpg
+Same as above, but with pipe as the delimeter (you can choose between ,._- and |):  
+http://example.com/image/55|w175|h75|c1|u1|fp/DSC_0001.jpg
 
 Please note that all the resize stuff where made without adding any querystring to the URL.
 This is good for Search Engine Optimization (SEO) reasones, but also for caching reasons. 
@@ -110,7 +111,7 @@ Filter (well.. one so far!)
 
 
 #### Donation and more plugins
-* If you like this plugin don't forget to [donate to support further development](http://eskapism.se/sida/donate/).
+* If you like this plugin don't forget to [donate to support further development](http://example.com/sida/donate/).
 * More [WordPress CMS plugins](http://wordpress.org/extend/plugins/profile/eskapism) by the same author.
 
 == Installation ==
