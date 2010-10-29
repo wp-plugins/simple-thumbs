@@ -6,9 +6,7 @@ Requires at least: 3.0
 Tested up to: 3.0
 Stable tag: trunk
 
-
-Generate image thumbs from WP attachments, with options to crop or fit to the wanted size.
-Also create IMG-tags with correct width & height attributes set after resize.
+Generate image thumbs from WP attachments, w/ options to crop & fit to wanted size & create IMG-tags w/ correct width & height attributes set after resize.
 
 == Description ==
 
@@ -21,8 +19,7 @@ This plugin does two things:
 With this function you can create ready-to-go IMG-tags, that even if you choose to resize the 
 image it will output the correct width and height.
 
-
-== Rewrite Rules/Nice Image URLs example ==
+#### Rewrite Rules/Nice Image URLs example
 
 Instead of this URL:
 http://eskapism.se/wordpress/wp-content/uploads/2010/02/DSC_0003.jpg
@@ -34,7 +31,7 @@ Shorter and sweeter.
 But there's more! You can also send in some arguments:
 
 Resize the image to be 150px in width:
-'http://eskapism.se/image/55:w150/DSC_0003.jpg'
+`http://eskapism.se/image/55:w150/DSC_0003.jpg`
 
 Resize the image to be 150px in width, and give it another name (you can name the image to whatever you want)
 http://eskapism.se/image/55:w150/my-cool-image.jpg
@@ -65,7 +62,7 @@ All generated images will be cached, so only the first call to each URL restults
 Images are also sent with far future expires headers, so if a user returns to your page all images should load blazingly fast.
 
 
-== simple_thumbs_img(): The Magic Function ==
+#### simple_thumbs_img(): The Magic Function
 
 simple_thumbs_img() generates IMG tags for you, with the correct width & height attributes set, even after resize.
 
