@@ -131,6 +131,10 @@ u0 for note, u3 for sharpest
 
 == Changelog ==
 
+= 0.4 =
+- Ooups, max_files in cache set to 10. Was for debug purposes... :/ set to 5000 now. should be fine for most I hope.
+- If cache directory is not found, it tries to create it. It could be deleted by other plugins that also used the cache directory, resulting in broken images.
+
 = 0.3 =
 - If size is not set or size is set but equal to original size, and no quality, filter or output image format is set, the image will not be modified and orginial image is returned. It's still a good idea to use simple_thumbs_img() because you then get the correct width and height attributes.
 

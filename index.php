@@ -3,7 +3,7 @@
 Plugin Name: Simple Thumbs
 Plugin URI: http://eskapism.se/code-playground/simple-thumbs/
 Description: Generates image thumbs, with options to crop or fit to the wanted size. Using custom rewrite rules the urls are also pretty nice and SEO-friendly. You can also generate img tags with the correct width & height attributes set, even after resize.
-Version: 0.3
+Version: 0.4
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -159,7 +159,7 @@ class wp_plugin_simple_thumbs {
 	var $regexp_dividers = "/[|,\-_:;]+/"; // type of dividers to allow
 	var $cache_dir;
 	var $args;
-	var $cache_max_files = 10;
+	var $cache_max_files = 5000;
 	var $cache_max_files_to_delete = 5;
 	
 	function __construct() {
@@ -185,8 +185,14 @@ class wp_plugin_simple_thumbs {
 	}
 
 	function is_simple_thumbs_request() {
+		
+		global $wp_query;
+		if ($wp_query->get("simple_thumbs_attachment_args")) {
+			return true;
+		}
+	
 	    // if run early (like in init) no usable info in wp_query at this time
-	    // so check REQUEST_URI directly, if it begins with /image/
+	    // so also check REQUEST_URI directly, if it begins with /image/
 	    return (preg_match("/^\/image\//", $_SERVER["REQUEST_URI"]));
 	}
 
@@ -242,13 +248,18 @@ class wp_plugin_simple_thumbs {
 
 	// lets cache for admins too
 	function filter_nocache_headers($headers) {
-		return array();
+		
+		if ($this->is_simple_thumbs_request()) {
+			return array();
+		} else {
+			return $headers;
+		}
 	}
 
 	/**
 	 * Deactivation
-	 * Flush rewrite rules (probably pointless, since we at the same time set up rules.. or..?)
-	 * Remove all cache files
+	 * - Flush rewrite rules (probably pointless, since we at the same time set up rules.. or..?)
+	 * - Remove all cache files
 	 */
 	function deactivation_hook() {
 		flush_rewrite_rules(false);
@@ -282,15 +293,20 @@ class wp_plugin_simple_thumbs {
 		$this->query_args = $wp_query->get("simple_thumbs_attachment_args");
 		$this->args = $this->parse_parameters($this->query_args);
 
-		// prefix cache file with attachment id so we can do stuff to that (like clear the cache)
-		$this->cache_dir = $this->get_cache_dir();
-		$this->cache_file = $this->args["attachment_id"] . "-" . md5($this->query_args);
-		
-		// Get from cache, if cache file exists
-		$cache_file = $this->cache_dir . $this->cache_file;
-		if (file_exists($cache_file)) {
-			header ('Simple-Thumbs: get-cached-file');
-			$this->show_cache_file();
+		// only continue if it's a simple thumbs request
+		if ($this->is_simple_thumbs_request()) {
+
+			// prefix cache file with attachment id so we can do stuff to that (like clear the cache)
+			$this->cache_dir = $this->get_cache_dir();
+			$this->cache_file = $this->args["attachment_id"] . "-" . md5($this->query_args);
+	
+			// Get from cache, if cache file exists
+			$cache_file = $this->cache_dir . $this->cache_file;
+			if (file_exists($cache_file)) {
+				header ('Simple-Thumbs: get-cached-file');
+				$this->show_cache_file();
+			}
+	
 		}
 
 	}
@@ -314,9 +330,8 @@ class wp_plugin_simple_thumbs {
 	// redirect_canonical wants to add a slash to our request
 	// but we really want it to end with for example /MyImage.jpg, not /MyImage.jpg/
 	function redirect_canonical($redirect_url, $requested_url) {
-	
-		global $wp_query;
-		if ($wp_query->get("simple_thumbs_attachment_args")) {
+		
+		if ($this->is_simple_thumbs_request()) {
 			return $requested_url;
 		}
 
@@ -481,6 +496,19 @@ class wp_plugin_simple_thumbs {
 		if (defined("WP_CONTENT_DIR")) {
 			$cache_dir = WP_CONTENT_DIR . "/cache/simple-thumbs/";
 		}
+		
+		// make sure cache dir exists
+		if (!is_dir($cache_dir)) {
+			@mkdir($cache_dir, 0775, true);
+			if (!is_dir($cache_dir)) {
+				return false;
+			}
+			
+			if (!is_writable($cache_dir)) {
+				return false;
+			}
+		}
+		
 		// cache dir in subfolder of plugin
 		#$cache_dir = dirname(__FILE__) . "/cache/";
 		
