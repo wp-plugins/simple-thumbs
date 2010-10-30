@@ -1,10 +1,9 @@
 <?php
-
 /*
 Plugin Name: Simple Thumbs
 Plugin URI: http://eskapism.se/code-playground/simple-thumbs/
 Description: Generates image thumbs, with options to crop or fit to the wanted size. Using custom rewrite rules the urls are also pretty nice and SEO-friendly. You can also generate img tags with the correct width & height attributes set, even after resize.
-Version: 0.2
+Version: 0.3
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -331,9 +330,6 @@ class wp_plugin_simple_thumbs {
 
 			$upload_dir = wp_upload_dir();
 
-			// get the passed arguments
-			#$this->args = $this->parse_parameters($this->query_args);
-			
 			// we have the args from the query
 			// now fetch the attachment from WordPress
 			$attachment_id = $this->args["attachment_id"];
@@ -347,43 +343,68 @@ class wp_plugin_simple_thumbs {
 			}
 			$attachment_local_file = $upload_dir["basedir"] . "/" . $attachment_meta["file"];
 			
+
 			// now we have all info to start resizing
 			$resizeObj = new simple_thumbs_resize($attachment_local_file);
-			$resizeObj->resizeImage($this->args["w"], $this->args["h"], $this->args["m"]);
-			
-			// if u = true then unsharp
-			// it's really really nice for small images/thumbnails
-			if ($this->args["u"]) {
-				// $amount = 80, $radius = 0.5, $threshold = 3
-				switch ($this->args["u"]) {
-					case "2":
-						$unsharp_amount = 60;
-						$unsharp_radius = 0.4;
-						$unsharp_threshold = 3;
-						break;
-					case "3":
-						$unsharp_amount = 80;
-						$unsharp_radius = 0.5;
-						$unsharp_threshold = 3;
-						break;
-					case "1":
-					default:
-						$unsharp_amount = 40;
-						$unsharp_radius = 0.3;
-						$unsharp_threshold = 2;
-						break;
 
-				}
-				$resizeObj->unsharpImage($unsharp_amount, $unsharp_radius, $unsharp_threshold);
+			$doTheResize = true;
+			// check if resize args is equal to real size or no size set
+			// in that case we should not try to resize it, because
+			// we want to keep everything as it is
+			// ... but only if we don't have any args like quality or unsharp
+			if (
+				(($resizeObj->width == $this->args["w"] && $resizeObj->height == $this->args["h"])
+				|| (!$this->args["w"] && !$this->args["h"]))
+				&&
+				!$this->args["qInitiallySet"] && !$this->args["u"] && !$this->args["fInitiallySet"]
+			) {
+				$doTheResize = false;
 			}
 			
+			if ($doTheResize) {
+				$resizeObj->resizeImage($this->args["w"], $this->args["h"], $this->args["m"]);
+
+				// if u = true then unsharp
+				// it's really really nice for small images/thumbnails
+				if ($this->args["u"]) {
+					// $amount = 80, $radius = 0.5, $threshold = 3
+					switch ($this->args["u"]) {
+						case "2":
+							$unsharp_amount = 60;
+							$unsharp_radius = 0.4;
+							$unsharp_threshold = 3;
+							break;
+						case "3":
+							$unsharp_amount = 80;
+							$unsharp_radius = 0.5;
+							$unsharp_threshold = 3;
+							break;
+						case "1":
+						default:
+							$unsharp_amount = 40;
+							$unsharp_radius = 0.3;
+							$unsharp_threshold = 2;
+							break;
+	
+					}
+					$resizeObj->unsharpImage($unsharp_amount, $unsharp_radius, $unsharp_threshold);
+				}
+			}
+					
 			// save to cache folder
 			if (is_dir($this->cache_dir) && (is_writable($this->cache_dir))) {
 
 				// ok
 				$this->clean_cache();
 				header ('Simple-Thumbs: save-new-cached-file');
-				$resizeObj->saveImage($this->cache_dir . $this->cache_file, $this->args["q"], $this->args["f"]);
+				
+				if ($doTheResize) {
+					$resizeObj->saveImage($this->cache_dir . $this->cache_file, $this->args["q"], $this->args["f"]);
+				} else {
+					// if no resize, we must save the file anyway..
+					// bascially just copy original file to cache file. yeah.
+					copy($attachment_local_file, $this->cache_dir . $this->cache_file);
+				}
 				
 				// image written, now serve it
 				$this->show_cache_file();
@@ -523,11 +544,21 @@ class wp_plugin_simple_thumbs {
 		$arr_real_args["m"] = $method;
 		
 		// make sure quality is an int
+		if (isset($arr_real_args["q"])) {
+			$arr_real_args["qInitiallySet"] = true;
+		} else {
+			$arr_real_args["qInitiallySet"] = false;
+		}
 		$arr_real_args["q"] = (int) $arr_real_args["q"];
 		// default 85
 		if (!$arr_real_args["q"]) { $arr_real_args["q"] = 85; }
 		
 		// output format. default to jpg
+		if (isset($arr_real_args["f"])) {
+			$arr_real_args["fInitiallySet"] = true;
+		} else {
+			$arr_real_args["fInitiallySet"] = false;
+		}
 		if ($arr_real_args["f"] == "j") {
 			$arr_real_args["f"] = "jpg";
 		} elseif ($arr_real_args["f"] == "p") {

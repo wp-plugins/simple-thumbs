@@ -6,11 +6,10 @@ Requires at least: 3.0
 Tested up to: 3.0
 Stable tag: trunk
 
-Generate image thumbs from WP attachments, w/ options to crop & fit to wanted size & create IMG-tags w/ correct width & height attributes set after resize.
+Create image thumbs from WP attachments, w/ option to crop & fit to wanted size &
+create IMG-tags w/ correct width & height attributes.
 
 == Description ==
-
-(Nice of you to find this plugin. I'm still working on the readme and on a example/tutorial. Stay tuned!)
 
 This plugin does three things:
 
@@ -97,17 +96,22 @@ it can't determine the size of the image.
 </code>
 
 
-== Resize modes ==
+#### Resize modes
 
-* within
-* crop
-* portrait
-* landscape
-* auto
+Control the way the thumbs are created by adding parameter "m", as in "mode".
+To learn how they work just experiment a bit.
 
-Filter (well.. one so far!)
+* within = mw
+* crop = mc
+* portrait = mp
+* landscape = ml
+* auto = ma
+
+
+#### Filters
 
 * unsharp mask - good for making small thumbnails appear to have more detail. Once you've gone unsharp, you don't want to go back! :)
+u0 for note, u3 for sharpest
 
 
 #### Donation and more plugins
@@ -118,7 +122,7 @@ Filter (well.. one so far!)
 
 1. Upload the folder "simple-thumbs" to "/wp-content/plugins/"
 1. Activate the plugin through the "Plugins" menu in WordPress
-1. Done! Now start editing your template files. See usage for more info.
+1. Done! Now start editing your template files. See usage under description for more info.
 
 
 == Screenshots ==
@@ -126,6 +130,9 @@ Filter (well.. one so far!)
 1. No screenshots yet.
 
 == Changelog ==
+
+= 0.3 =
+- If size is not set or size is set but equal to original size, and no quality, filter or output image format is set, the image will not be modified and orginial image is returned. It's still a good idea to use simple_thumbs_img() because you then get the correct width and height attributes.
 
 = 0.2 =
 - Fixed so plugins wp_minify and autoptimize don't break the thumbnails.
