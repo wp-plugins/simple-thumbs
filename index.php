@@ -3,7 +3,7 @@
 Plugin Name: Simple Thumbs
 Plugin URI: http://eskapism.se/code-playground/simple-thumbs/
 Description: Generates image thumbs, with options to crop or fit to the wanted size. Using custom rewrite rules the urls are also pretty nice and SEO-friendly. You can also generate img tags with the correct width & height attributes set, even after resize.
-Version: 0.4
+Version: 0.4.1
 Author: Pär Thernström
 Author URI: http://eskapism.se/
 License: GPL2
@@ -54,7 +54,7 @@ License: GPL2
 if (!function_exists("simple_thumbs_img")) {
 function simple_thumbs_img($args = "") {
 
-    $defaults = array(
+	$defaults = array(
     	"w" => "0",
 		"h" => "0",
 		"q" => 85,
@@ -64,6 +64,7 @@ function simple_thumbs_img($args = "") {
 		"alt" => "", // alt-attribute, always set
 		"title" => null, // title-attribute, only set if not null
 		"tag" => false, // return scr wrapped in tag?
+		"class" => null, //add class to the tag
 		"id" => null, // get src from file with this id
 		"name" => null // use attachment name by default
     );
@@ -77,6 +78,12 @@ function simple_thumbs_img($args = "") {
 			return "";
 		}
 		$src = wp_get_attachment_url($file_id);
+
+		// if src if false, then no image i guess
+		if (!$src) {
+			return "";
+		}
+
 		$image_info = wp_get_attachment_metadata($file_id);
 		$post_image = get_post($file_id);
 		$post_name = $post_image->post_name;
@@ -135,7 +142,11 @@ function simple_thumbs_img($args = "") {
 		if (isset($args["title"])) {
 			$title = " title='{$args[title]}' ";
 		}
-		$out = sprintf("<img src='%s' alt='%s' $title width='%d' height='%d' />", $thumb_src, $alt, $new_width, $new_height);
+		$class = "";
+		if (isset($args["class"])) {
+			$class = " class='".$args["class"]."' ";
+		}
+		$out = sprintf("<img src='%s' alt='%s' $title width='%d' height='%d' %s />", $thumb_src, $alt, $new_width, $new_height, $class);
 		
 	} else {
 		$out = $thumb_src;

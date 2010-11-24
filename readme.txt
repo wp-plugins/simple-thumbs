@@ -90,7 +90,7 @@ it can't determine the size of the image.
 	
 	// print img tag with nice url for image with id 55, and crop it to be a thumb that has the excact size 75x75,
 	//with the correct width and height attributes set, and add an alt text
-	echo simple_thumbs_img("id=55&tag=1&w=75&h=75&mc&alt=My alternative text");
+	echo simple_thumbs_img("id=55&tag=1&w=75&h=75&m=c&alt=My alternative text");
 
     ?>
 </code>
@@ -130,6 +130,10 @@ u0 for note, u3 for sharpest
 1. No screenshots yet.
 
 == Changelog ==
+
+= 0.4.1 =
+- IMG tag can now have a class. For example: $img_src = simple_thumbs_img("id=55&tag=1&class='my-image-class'");
+- if id provied is not the id of an image (wp_get_attachment_url returns false) then an empty string is returned. Solves "divided by zero"-errors.
 
 = 0.4 =
 - Ooups, max_files in cache set to 10. Was for debug purposes... :/ set to 5000 now. should be fine for most I hope.
