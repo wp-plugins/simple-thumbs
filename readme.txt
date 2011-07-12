@@ -11,6 +11,8 @@ create IMG-tags w/ correct width & height attributes.
 
 == Description ==
 
+** This plugin will no longer be updated. **
+
 This plugin does three things:
 
 1. It creates rewrite rules that let you create nice urls for your images, 
